@@ -12,7 +12,9 @@ enum class AppLanguage(val code: String) {
         fun fromCode(code: String?): AppLanguage {
             if (code == null) return SYSTEM
             return entries.firstOrNull {
-                it.code.equals(code, ignoreCase = true) || it.name.equals(code, ignoreCase = true)
+                it.code.equals(code, ignoreCase = true) ||
+                it.name.equals(code, ignoreCase = true) ||
+                (it == SPANISH && code.startsWith("es", ignoreCase = true))
             } ?: SYSTEM
         }
     }
