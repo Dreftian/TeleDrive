@@ -559,11 +559,11 @@ class TransferExecutor(
             mimeType = entity.mimeType,
             folderPath = folderPath
         ) { output ->
-            source.inputStream().buffered().use { input ->
+            source.inputStream().buffered(BUFFER_SIZE).use { input ->
                 if (key != null) {
                     streamCrypto.decryptStream(key, input, output)
                 } else {
-                    input.copyTo(output)
+                    input.copyTo(output, BUFFER_SIZE)
                 }
             }
         } ?: return TransferOutcome.Failed(
@@ -621,6 +621,7 @@ class TransferExecutor(
         File(storagePaths.cacheDir, "staging").apply { mkdirs() }
 
     companion object {
+        private const val BUFFER_SIZE = 256 * 1024
         private const val EAGER_HASH_LIMIT = 512L * 1024 * 1024
         private const val SPACE_MARGIN_BYTES = 256L * 1024 * 1024
         private const val STALL_TIMEOUT_MS = 180_000L

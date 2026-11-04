@@ -161,16 +161,16 @@ class PartUploader(
         hasher: HashAccumulator?
     ) {
         target.parentFile?.mkdirs()
-        source.inputStream().use { input ->
+        source.inputStream().buffered(BUFFER_SIZE).use { input ->
             skipExactly(input, plainOffset)
             val ranged = RangeInputStream(input, plainSize)
             val hashed = hasher?.wrap(ranged) ?: ranged
-            target.outputStream().buffered().use { output ->
+            target.outputStream().buffered(BUFFER_SIZE).use { output ->
                 if (encrypt) {
                     val key = wrappedKeyRepository.getOrCreate(CryptoKeys.CONTENT)
                     streamCrypto.encryptStream(key, hashed, output)
                 } else {
-                    hashed.copyTo(output)
+                    hashed.copyTo(output, BUFFER_SIZE)
                 }
             }
         }
@@ -193,6 +193,7 @@ class PartUploader(
 
     private companion object {
         const val TAG = "PartUploader"
+        const val BUFFER_SIZE = 256 * 1024
         const val SCRATCH_DIR = "parts"
         const val OCTET_STREAM = "application/octet-stream"
     }

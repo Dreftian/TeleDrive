@@ -142,8 +142,9 @@ class TransferQueueDrainer(
     }
 
     private suspend fun claimNextQueued(includeBackups: Boolean): String? = claimLock.withLock {
-        val uploading = executing.values.any { !it.isIncoming }
-        val next = nextClaimable(includeBackups, executing.keys, includeUploads = !uploading)
+        val uploadingCount = executing.values.count { !it.isIncoming }
+        val maxUploads = (concurrencyOf(settingsRepository.preferences.first()) / 2).coerceIn(2, MAX_CONCURRENT_UPLOADS)
+        val next = nextClaimable(includeBackups, executing.keys, includeUploads = uploadingCount < maxUploads)
             ?: return@withLock null
         transferDao.setState(next.id, TransferState.RUNNING, System.currentTimeMillis())
         executing[next.id] = next.type
@@ -216,7 +217,8 @@ class TransferQueueDrainer(
     }
 
     private companion object {
-        const val MAX_CONCURRENCY = 6
+        const val MAX_CONCURRENCY = 10
+        const val MAX_CONCURRENT_UPLOADS = 4
         const val SLOT_WAIT_MS = 5_000L
         const val IDLE_POLL_MS = 1_000L
         const val BASE_BACKOFF_SECONDS = 2

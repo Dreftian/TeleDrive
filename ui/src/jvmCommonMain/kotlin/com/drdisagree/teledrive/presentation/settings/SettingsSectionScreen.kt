@@ -1160,7 +1160,7 @@ private fun AdvancedSection(
             SettingsSliderRow(
                 title = stringResource(Res.string.settings_parallel_transfers),
                 value = prefs.transferConcurrency,
-                range = 1..6,
+                range = 1..10,
                 onChange = { value ->
                     viewModel.update { it.copy(transferConcurrency = value) }
                 }

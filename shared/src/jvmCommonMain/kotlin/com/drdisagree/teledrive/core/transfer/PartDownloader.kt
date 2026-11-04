@@ -74,15 +74,15 @@ class PartDownloader(
 
     private fun appendPart(source: File, target: PartialDownload, encrypted: Boolean) {
         target.append { output ->
-            val buffered = output.buffered()
+            val buffered = output.buffered(BUFFER_SIZE)
             if (encrypted) {
                 val key = wrappedKeyRepository.get(CryptoKeys.CONTENT)
                     ?: throw KeyUnavailableException(CryptoKeys.CONTENT)
-                source.inputStream().buffered().use { input ->
+                source.inputStream().buffered(BUFFER_SIZE).use { input ->
                     streamCrypto.decryptStream(key, input, buffered)
                 }
             } else {
-                source.inputStream().buffered().use { input -> input.copyTo(buffered) }
+                source.inputStream().buffered(BUFFER_SIZE).use { input -> input.copyTo(buffered, BUFFER_SIZE) }
             }
             buffered.flush()
         }
@@ -105,5 +105,6 @@ class PartDownloader(
 
     private companion object {
         const val TAG = "PartDownloader"
+        const val BUFFER_SIZE = 256 * 1024
     }
 }

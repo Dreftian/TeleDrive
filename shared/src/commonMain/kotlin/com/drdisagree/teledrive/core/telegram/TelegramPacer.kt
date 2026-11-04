@@ -71,8 +71,8 @@ class TelegramPacer {
 
     private companion object {
         const val TAG = "TelegramPacer"
-        const val PER_MINUTE = 20
-        const val BURST = 5
+        const val PER_MINUTE = 60
+        const val BURST = 20
         const val TOKENS_PER_MS = PER_MINUTE / 60_000.0
         const val MIN_WAIT_MS = 50L
         const val FALLBACK_SECONDS = 5

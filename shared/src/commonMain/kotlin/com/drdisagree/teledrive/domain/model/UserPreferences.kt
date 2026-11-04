@@ -53,7 +53,7 @@ data class UserPreferences(
     val backupNotifications: Boolean = true,
     val failureNotifications: Boolean = true,
 
-    val transferConcurrency: Int = 2,
+    val transferConcurrency: Int = 4,
     val transferRetryCount: Int = 3,
     val allowMeteredTransfers: Boolean = true,
     val debugLogging: Boolean = false,

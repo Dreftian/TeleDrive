@@ -1335,7 +1335,7 @@ class DesktopTelegramClient(
         private const val REQUEST_TIMEOUT_CODE = 408
         private const val COPY_TIMEOUT_MS = 30_000L
         private const val CLIENT_WAIT_STEP_MS = 10L
-        private const val DOWNLOAD_PRIORITY = 16
+        private const val DOWNLOAD_PRIORITY = 32
         const val DOWNLOAD_RESUME_INTERVAL_MS = 15_000L
         private const val THUMBNAIL_PRIORITY = 24
         private const val THUMBNAIL_EDGE = 320
