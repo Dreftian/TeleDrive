@@ -134,7 +134,7 @@ fun TeleDriveApp(
     val systemLocaleList = LocalLocaleList.current
     val targetLocaleList = remember(state.language, systemLocaleList) {
         when (state.language) {
-            AppLanguage.SYSTEM -> systemLocaleList
+            AppLanguage.SYSTEM -> { val first = systemLocaleList.firstOrNull(); if (first?.language?.startsWith("es", ignoreCase = true) == true) LocaleList(Locale("es")) else systemLocaleList }
             AppLanguage.ENGLISH -> LocaleList(Locale("en"))
             AppLanguage.RUSSIAN -> LocaleList(Locale("ru"))
             AppLanguage.PORTUGUESE_BR -> LocaleList(Locale("pt-BR"))
@@ -147,7 +147,7 @@ fun TeleDriveApp(
     remember(state.language) {
         java.util.Locale.setDefault(
             when (state.language) {
-                AppLanguage.SYSTEM -> systemDefault
+                AppLanguage.SYSTEM -> { if (systemDefault.language.startsWith("es", ignoreCase = true)) java.util.Locale.forLanguageTag("es") else systemDefault }
                 AppLanguage.ENGLISH -> java.util.Locale.forLanguageTag("en")
                 AppLanguage.RUSSIAN -> java.util.Locale.forLanguageTag("ru")
                 AppLanguage.PORTUGUESE_BR -> java.util.Locale.forLanguageTag("pt-BR")

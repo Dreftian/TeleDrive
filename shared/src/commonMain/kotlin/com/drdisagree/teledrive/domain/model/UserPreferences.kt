@@ -26,7 +26,7 @@ data class UserPreferences(
     val folderOwnershipRepaired: Boolean = false,
 
     val theme: AppTheme = AppTheme.SYSTEM,
-    val language: AppLanguage = AppLanguage.SYSTEM,
+    val language: AppLanguage = AppLanguage.SPANISH,
     val dynamicColor: Boolean = true,
     val viewMode: ViewMode = ViewMode.GRID,
     val gridSize: Int = 3,

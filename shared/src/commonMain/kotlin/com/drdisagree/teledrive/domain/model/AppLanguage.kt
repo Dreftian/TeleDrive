@@ -10,12 +10,12 @@ enum class AppLanguage(val code: String) {
 
     companion object {
         fun fromCode(code: String?): AppLanguage {
-            if (code == null) return SYSTEM
+            if (code == null) return SPANISH
             return entries.firstOrNull {
                 it.code.equals(code, ignoreCase = true) ||
                 it.name.equals(code, ignoreCase = true) ||
                 (it == SPANISH && code.startsWith("es", ignoreCase = true))
-            } ?: SYSTEM
+            } ?: SPANISH
         }
     }
 }

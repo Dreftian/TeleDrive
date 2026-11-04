@@ -22,17 +22,24 @@ jobs:
       - name: Build FFmpeg audio decoder
         uses: ./.github/actions/build-ffmpeg-decoder
 
-      - name: Decode keystore
-        run: echo "${{ secrets.KEYSTORE }}" | base64 -d > "$RUNNER_TEMP/keystore.jks"
+      - name: Setup keystore
+        run: |
+          if [ -n "${{ secrets.KEYSTORE }}" ]; then
+            echo "${{ secrets.KEYSTORE }}" | base64 -d > "$RUNNER_TEMP/keystore.jks"
+            echo "KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }}" >> $GITHUB_ENV
+            echo "KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> $GITHUB_ENV
+            echo "KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}" >> $GITHUB_ENV
+          else
+            echo "Generating release keystore..."
+            keytool -genkeypair -v -keystore "$RUNNER_TEMP/keystore.jks" -alias teledrive -keyalg RSA -keysize 2048 -validity 10000 -storepass teledrive123 -keypass teledrive123 -dname "CN=TeleDrive, OU=Dreftian, O=TeleDrive, L=Lima, S=Lima, C=PE"
+            echo "KEYSTORE_PASSWORD=teledrive123" >> $GITHUB_ENV
+            echo "KEY_ALIAS=teledrive" >> $GITHUB_ENV
+            echo "KEY_PASSWORD=teledrive123" >> $GITHUB_ENV
+          fi
+          echo "KEYSTORE_FILE=$RUNNER_TEMP/keystore.jks" >> $GITHUB_ENV
 
       - name: Assemble signed release APKs
-        env:
-          KEYSTORE_FILE: ${{ runner.temp }}/keystore.jks
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew :android:assembleRelease -PwithFfmpegDecoder
-
       - uses: actions/upload-artifact@v7
         with:
           name: android-release
@@ -185,7 +192,8 @@ jobs:
 
       - uses: softprops/action-gh-release@v3
         with:
-          draft: true
+          draft: false
+          tag_name: ${{ github.ref_name }}
           files: |
             artifacts/*.apk
             artifacts/*.msi
